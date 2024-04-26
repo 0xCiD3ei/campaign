@@ -1,0 +1,16 @@
+.app {
+  height: 100%;
+  padding: 24px;
+}
+
+.title {
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.btn-submit {
+  display: block;
+  margin: 16px auto 0;
+}
+
