@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Campaign, CampaignError, SubCampaignError} from "../types/campaign.type";
+import {AdError, Campaign, CampaignError, SubCampaignError} from "../types/campaign.type";
 
 interface CampaignProviderProps {
 	children: React.ReactNode
@@ -12,6 +12,9 @@ interface CampaignContextProps {
 	handleListSubCampaign: (id: number) => void;
 	handleUpdateSubCampaign: (value: SubCampaignError) => void;
 	handleOnchangeCampaign: (value: string, name: string) => void;
+	handleAddAd: (subId: number, value: AdError) => void;
+	handleUpdateAd: (subId: number, value: AdError) => void;
+	handleDeleteAd: (subId: number, adId: number) => void;
 }
 
 
@@ -46,13 +49,6 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 	const [selectedSub, setSelectedSub] = useState<number>(1);
 	
 	console.log("campaign-----", campaign);
-	
-	// const handleAddAd = (index: number) => {
-	// 	const newAd: Ad = { name: `Quảng cáo `, quantity: 0 };
-	// 	const newSubCampaigns = [...campaign.subCampaigns];
-	// 	newSubCampaigns[index].ads.push(newAd);
-	// 	setCampaign({ ...campaign, subCampaigns: newSubCampaigns });
-	// };
 	
 	const handleOnchangeCampaign = (value: string, name: string) => {
 		setCampaign({ ...campaign, information: { ...campaign.information, [name]: value }});
@@ -89,18 +85,73 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 	}
 	
 	const handleUpdateSubCampaign = (value: any) => {
-		console.log(value);
 		const subCampaignIndex = campaign.subCampaigns.findIndex(sub => sub.id === value.id);
 		if (subCampaignIndex !== -1) {
 			const updatedSubCampaigns = [...campaign.subCampaigns];
 			updatedSubCampaigns[subCampaignIndex] = value;
-			console.log(updatedSubCampaigns);
 				setCampaign(prevCampaign => ({
 					...prevCampaign,
 					subCampaigns: updatedSubCampaigns
 				}));
 		}
 	}
+	
+	const handleAddAd = (subId: number, value: AdError) => {
+		const subCampaignIndex = campaign.subCampaigns.findIndex(sub => sub.id === subId);
+		if (subCampaignIndex !== -1) {
+			const updatedSubCampaigns = [...campaign.subCampaigns];
+			updatedSubCampaigns[subCampaignIndex] = {
+				...updatedSubCampaigns[subCampaignIndex],
+				ads: [
+					...updatedSubCampaigns[subCampaignIndex].ads,
+					value
+				]
+			};
+			setCampaign(prevCampaign => ({
+				...prevCampaign,
+				subCampaigns: updatedSubCampaigns
+			}));
+		}
+	}
+	
+	const handleUpdateAd = (subId: number, updatedAd: AdError) => {
+		setCampaign(prevCampaign => ({
+			...prevCampaign,
+			subCampaigns: prevCampaign.subCampaigns.map(subCampaign => {
+				if (subCampaign.id === subId) {
+					return {
+						...subCampaign,
+						ads: subCampaign.ads.map(ad => {
+							if (ad.id === updatedAd.id) {
+								return {
+									...ad,
+									name: updatedAd.name,
+									quantity: updatedAd.quantity,
+								};
+							}
+							return ad;
+						})
+					};
+				}
+				return subCampaign;
+			})
+		}));
+	};
+	
+	const handleDeleteAd = (subId: number, adId: number) => {
+		setCampaign(prevCampaign => ({
+			...prevCampaign,
+			subCampaigns: prevCampaign.subCampaigns.map(subCampaign => {
+				if (subCampaign.id === subId) {
+					return {
+						...subCampaign,
+						ads: subCampaign.ads.filter(ad => ad.id !== adId)
+					};
+				}
+				return subCampaign;
+			})
+		}));
+	};
 	
 	return (
 		<CampaignContext.Provider value={{
@@ -109,8 +160,10 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 			handleAddSubCampaign,
 			handleListSubCampaign,
 			handleUpdateSubCampaign,
-			// handleAddAd,
-			handleOnchangeCampaign
+			handleOnchangeCampaign,
+			handleAddAd,
+			handleUpdateAd,
+			handleDeleteAd
 		}}>
 			{children}
 		</CampaignContext.Provider>
