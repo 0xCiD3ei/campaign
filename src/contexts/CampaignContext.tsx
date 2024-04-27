@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {AdError, Campaign, CampaignError, SubCampaignError} from "../types/campaign.type";
-
+import { v4 as uuidv4 } from 'uuid';
 interface CampaignProviderProps {
 	children: React.ReactNode
 }
@@ -14,7 +14,7 @@ interface CampaignContextProps {
 	handleOnchangeCampaign: (value: string, name: string) => void;
 	handleAddAd: (subId: number, value: AdError) => void;
 	handleUpdateAd: (subId: number, value: AdError) => void;
-	handleDeleteAd: (subId: number, adId: number) => void;
+	handleDeleteAd: (subId: number, adId: string) => void;
 	handleDeleteAllAds: (subId: number) => void;
 	handleValidation: () => void;
 }
@@ -35,7 +35,7 @@ const initializeCampaign: CampaignError = {
 		error: "",
 		ads: [
 			{
-				id: 1,
+				id: uuidv4(),
 				name: "Quảng cáo 1",
 				quantity: 0,
 				nameError: "",
@@ -68,7 +68,7 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 					error: "",
 					ads: [
 						{
-							id: 1,
+							id: uuidv4(),
 							name: "Quảng cáo 1",
 							quantity: 0,
 							nameError: "",
@@ -83,7 +83,7 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 	};
 	
 	const handleListSubCampaign = (id: number) => {
-		setSelectedSub(id)
+		setSelectedSub(id);
 	}
 	
 	const handleUpdateSubCampaign = (value: any) => {
@@ -140,7 +140,7 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 		}));
 	};
 	
-	const handleDeleteAd = (subId: number, adId: number) => {
+	const handleDeleteAd = (subId: number, adId: string) => {
 		setCampaign(prevCampaign => ({
 			...prevCampaign,
 			subCampaigns: prevCampaign.subCampaigns.map(subCampaign => {

@@ -16,13 +16,16 @@ function a11yProps(index: number) {
 
 function App() {
   const [tab, setTab] = React.useState(0);
-  const {campaign} = useContext(CampaignContext);
+  const {campaign, handleValidation} = useContext(CampaignContext);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
   };
   
   const handleSubmit = () => {
-    alert(JSON.stringify(campaign));
+    handleValidation();
+    if(campaign.validation) {
+      alert(JSON.stringify(campaign));
+    }
   }
   
   return (

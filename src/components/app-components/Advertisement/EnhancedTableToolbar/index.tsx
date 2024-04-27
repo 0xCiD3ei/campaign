@@ -4,10 +4,10 @@ import AddIcon from "@mui/icons-material/Add";
 import React, {useContext} from "react";
 import {AdError, SubCampaignError} from "../../../../types/campaign.type";
 import {CampaignContext} from "../../../../contexts/CampaignContext";
-
+import { v4 as uuidv4 } from 'uuid';
 interface EnhancedTableToolbarProps {
 	numSelected: number;
-	selectedId?: number[];
+	selectedId?: string[];
 	subCampaign?: SubCampaignError;
 	rows: AdError[];
 	onDeleteAds: () => void;
@@ -20,7 +20,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	
 	const handleAddRow = () => {
 		const newRow = {
-			id: rows.length + 1,
+			id: uuidv4(),
 			name: `Quảng cáo ${rows.length + 1}`,
 			quantity: 0,
 			nameError: '',

@@ -23,7 +23,7 @@ export default function Advertisement(props: AdvertisementProps) {
 	const { handleUpdateAd, handleDeleteAd, handleDeleteAllAds} = useContext(CampaignContext);
 	const {subCampaign} = props;
 	const [rows, setRows] = useState<AdError[]>([]);
-	const [selected, setSelected] = useState<number[]>([]);
+	const [selected, setSelected] = useState<string[]>([]);
 	
 	useEffect(() => {
 		if(subCampaign) {
@@ -31,13 +31,13 @@ export default function Advertisement(props: AdvertisementProps) {
 		}
 	}, [subCampaign]);
 	
-	const handleDeleteRow = (adId: number) => {
+	const handleDeleteRow = (adId: string) => {
 		handleDeleteAd(subCampaign?.id as number, adId);
 	}
 	
-	const handleClick = (id: number) => {
+	const handleClick = (id: string) => {
 		const selectedIndex = selected.indexOf(id);
-		let newSelected: number[] = [];
+		let newSelected: string[] = [];
 		
 		if (selectedIndex === -1) {
 			newSelected = newSelected.concat(selected, id);
@@ -57,13 +57,13 @@ export default function Advertisement(props: AdvertisementProps) {
 	
 	const handleSelectAllClick = () => {
 		if (selected.length !== rows.length) {
-			setSelected(rows.map(row => row.id) as number[]);
+			setSelected(rows.map(row => row.id) as string[]);
 		} else {
 			setSelected([]);
 		}
 	};
 	
-	const isSelected = (id: number) => selected.indexOf(id) !== -1;
+	const isSelected = (id: string) => selected.indexOf(id) !== -1;
 	
 	const handleDeleteAllRows = () => {
 		handleDeleteAllAds(subCampaign?.id as number)
@@ -97,7 +97,7 @@ export default function Advertisement(props: AdvertisementProps) {
 					</TableHead>
 					<TableBody>
 						{rows.map((row: AdError, index: number) => {
-							const itemSelected = isSelected(row.id as number);
+							const itemSelected = isSelected(row.id as string);
 							return (
 							<TableRow key={index}>
 								<TableCell padding="checkbox">
@@ -105,7 +105,7 @@ export default function Advertisement(props: AdvertisementProps) {
 										aria-checked={itemSelected}
 										key={row.id}
 										checked={itemSelected}
-										onClick={() => handleClick(row?.id as number)}
+										onClick={() => handleClick(row?.id as string)}
 									/>
 								</TableCell>
 								<TableCell align="center">
@@ -143,7 +143,7 @@ export default function Advertisement(props: AdvertisementProps) {
 									/>
 								</TableCell>
 								<TableCell align="center">
-									<IconButton aria-label="delete-ad" onClick={() => handleDeleteRow(row.id as number)}>
+									<IconButton aria-label="delete-ad" onClick={() => handleDeleteRow(row.id as string)}>
 										<DeleteIcon  />
 									</IconButton>
 								</TableCell>

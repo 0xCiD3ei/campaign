@@ -24,7 +24,7 @@ export interface Error {
 }
 
 export interface AdError extends Ad {
-	id?: number;
+	id?: string;
 	nameError?: string;
 	quantityError?: string;
 }
