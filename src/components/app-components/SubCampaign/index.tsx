@@ -96,6 +96,8 @@ export default function SubCampaign() {
 					variant= "standard"
 					onChange={(e) => handleOnChangeInput(e)}
 					autoFocus
+					error={!!activeSubCampaign?.error}
+					helperText={activeSubCampaign?.error}
 				/>
 				<FormControlLabel
 					control={

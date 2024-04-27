@@ -15,6 +15,8 @@ interface CampaignContextProps {
 	handleAddAd: (subId: number, value: AdError) => void;
 	handleUpdateAd: (subId: number, value: AdError) => void;
 	handleDeleteAd: (subId: number, adId: number) => void;
+	handleDeleteAllAds: (subId: number) => void;
+	handleValidation: () => void;
 }
 
 
@@ -153,6 +155,52 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 		}));
 	};
 	
+	const handleDeleteAllAds = (subId: number) => {
+		setCampaign(prevCampaign => ({
+			...prevCampaign,
+			subCampaigns: prevCampaign.subCampaigns.map(subCampaign => {
+				if (subCampaign.id === subId) {
+					return {
+						...subCampaign,
+						ads: []
+					};
+				}
+				return subCampaign;
+			})
+		}));
+	}
+	
+	const handleValidation = () => {
+		let hasError = false;
+		
+		if (campaign.information.name.trim().length === 0) {
+			campaign.information.error = "Trường tên chiến dịch là bắt buộc";
+			hasError = true;
+		}
+		
+		campaign.subCampaigns.forEach((sub: SubCampaignError) => {
+			if (sub.name.trim().length === 0) {
+				sub.error = "Trường tên chiến dịch con là bắt buộc";
+				hasError = true;
+			}
+			sub.ads.forEach((ads: AdError) => {
+				if (ads.name.trim().length === 0) {
+					ads.nameError = "Trường tên quảng cáo là bắt buộc";
+					hasError = true;
+				}
+				if (ads.quantity === 0) {
+					ads.quantityError = "Trường số lượng quảng cáo là phải lớn hơn 0";
+					hasError = true;
+				}
+			});
+		});
+		return {
+			...campaign,
+			validation: !hasError,
+			hasError,
+		};
+	};
+	
 	return (
 		<CampaignContext.Provider value={{
 			campaign,
@@ -163,7 +211,9 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 			handleOnchangeCampaign,
 			handleAddAd,
 			handleUpdateAd,
-			handleDeleteAd
+			handleDeleteAd,
+			handleDeleteAllAds,
+			handleValidation
 		}}>
 			{children}
 		</CampaignContext.Provider>

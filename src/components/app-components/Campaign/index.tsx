@@ -11,6 +11,8 @@ export default function Campaign() {
 				id="name"
 				required
 				fullWidth
+				error={!!campaign.information.error}
+				helperText={campaign.information.error}
 				label="Tên chiến dịch"
 				variant="outlined"
 				value={campaign.information.name}
