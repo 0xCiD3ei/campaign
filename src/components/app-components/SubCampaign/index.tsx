@@ -49,6 +49,20 @@ export default function SubCampaign() {
 		} as SubCampaignError);
 	}
 	
+	const isError = (subCampaign: SubCampaignError) => {
+		let error = false;
+		if (subCampaign.error !== "") {
+			error = true;
+		};
+		subCampaign.ads.forEach((ads) => {
+			if (ads.nameError !== "" || ads.quantityError !== "") {
+				error = true;
+			}
+		});
+		
+		return error;
+	};
+	
 	return (
 		<>
 			<Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
@@ -60,7 +74,12 @@ export default function SubCampaign() {
 			<List sx={{ width: '100%', cursor: "pointer"}}>
 				{
 					campaign.subCampaigns.map(ele => (
-						<ListItem key={ele.id} selected={selectedSub === ele.id} alignItems="flex-start" onClick={() => handleListSubCampaign(ele.id)}>
+						<ListItem
+							sx={{border: isError(ele) ? '1px solid red' : ''}}
+							key={ele.id}
+							selected={selectedSub === ele.id}
+							alignItems="flex-start" onClick={() => handleListSubCampaign(ele.id)}
+						>
 							<ListItemAvatar>
 								<CheckCircleOutlineIcon sx={{color: ele.status ?  "green" : "grey"}} />
 							</ListItemAvatar>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {AdError, Campaign, CampaignError, SubCampaignError} from "../types/campaign.type";
 import { v4 as uuidv4 } from 'uuid';
 interface CampaignProviderProps {
@@ -17,6 +17,7 @@ interface CampaignContextProps {
 	handleDeleteAd: (subId: number, adId: string) => void;
 	handleDeleteAllAds: (subId: number) => void;
 	handleValidation: () => void;
+	removeValidation: () => void;
 }
 
 
@@ -50,10 +51,8 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 	const [campaign, setCampaign] = useState<CampaignError>(initializeCampaign);
 	const [selectedSub, setSelectedSub] = useState<number>(1);
 	
-	console.log("campaign-----", campaign);
-	
 	const handleOnchangeCampaign = (value: string, name: string) => {
-		setCampaign({ ...campaign, information: { ...campaign.information, [name]: value }});
+		setCampaign({ ...campaign, information: { ...campaign.information, [name]: value, error: "", }});
 	}
 	
 	const handleAddSubCampaign = () => {
@@ -90,7 +89,10 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 		const subCampaignIndex = campaign.subCampaigns.findIndex(sub => sub.id === value.id);
 		if (subCampaignIndex !== -1) {
 			const updatedSubCampaigns = [...campaign.subCampaigns];
-			updatedSubCampaigns[subCampaignIndex] = value;
+			updatedSubCampaigns[subCampaignIndex] = {
+				...value,
+				error: "",
+			};
 				setCampaign(prevCampaign => ({
 					...prevCampaign,
 					subCampaigns: updatedSubCampaigns
@@ -129,6 +131,8 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 									...ad,
 									name: updatedAd.name,
 									quantity: updatedAd.quantity,
+									nameError: "",
+									quantityError: ""
 								};
 							}
 							return ad;
@@ -178,12 +182,12 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 			hasError = true;
 		}
 		
-		campaign.subCampaigns.forEach((sub: SubCampaignError) => {
-			if (sub.name.trim().length === 0) {
-				sub.error = "Trường tên chiến dịch con là bắt buộc";
+		campaign.subCampaigns.forEach((subCampaign: SubCampaignError) => {
+			if (subCampaign.name.trim().length === 0) {
+				subCampaign.error = "Trường tên chiến dịch con là bắt buộc";
 				hasError = true;
 			}
-			sub.ads.forEach((ads: AdError) => {
+			subCampaign.ads.forEach((ads: AdError) => {
 				if (ads.name.trim().length === 0) {
 					ads.nameError = "Trường tên quảng cáo là bắt buộc";
 					hasError = true;
@@ -194,12 +198,20 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 				}
 			});
 		});
-		return {
+		setCampaign({
 			...campaign,
 			validation: !hasError,
-			hasError,
-		};
+			hasError
+		})
 	};
+	
+	const removeValidation = () => {
+		setCampaign({
+			...campaign,
+			validation: false,
+			hasError: false
+		})
+	}
 	
 	return (
 		<CampaignContext.Provider value={{
@@ -213,7 +225,8 @@ export const CampaignProvider = ({children}: CampaignProviderProps) => {
 			handleUpdateAd,
 			handleDeleteAd,
 			handleDeleteAllAds,
-			handleValidation
+			handleValidation,
+			removeValidation
 		}}>
 			{children}
 		</CampaignContext.Provider>
